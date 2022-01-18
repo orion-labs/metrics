@@ -44,12 +44,7 @@ func NewDefaultPrometheusMetricServer(port int) *Server {
 }
 
 func NewPrometheusMetricServer(port int, h stats.Handler, eng *stats.Engine) *Server {
-	if eng.Handler == nil {
-		eng.Handler = h
-	} else {
-		eng.Register(h)
-	}
-
+	eng.Handler = h
 	stats.DefaultEngine = eng
 	s := &Server{
 		Port:        port,
