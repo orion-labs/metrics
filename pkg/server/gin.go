@@ -5,6 +5,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	GIN_MODE_DEBUG = "debug"
+	GIN_MODE_RELEASE = "release"
+)
+
 type GinHandler struct {
 	Method HttpMethod        `json:"http_method"`
 	Group  *gin.RouterGroup  `json:"router_group"`
@@ -12,8 +17,17 @@ type GinHandler struct {
 	Path   string            `json:"path"`
 }
 
-func NewGinEngine(middleware []GinHandler, handlers []GinHandler) *gin.Engine {
+func NewGinEngine(mode string, middleware []GinHandler, handlers []GinHandler) *gin.Engine {
+
+	//by default, the GIN mode is set to debug
+	if mode == GIN_MODE_DEBUG {
+		gin.SetMode(gin.DebugMode)
+	} else if mode == GIN_MODE_RELEASE {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	engine := gin.Default()
+
 	for _, mw := range middleware {
 		if mw.Group != nil {
 			mw.Group.Use(mw.Funcs...)
@@ -34,6 +48,7 @@ func NewGinEngine(middleware []GinHandler, handlers []GinHandler) *gin.Engine {
 }
 
 func StartGinServer(e *gin.Engine, port int) error {
+
 	if err := e.Run(fmt.Sprintf(":%d", port)); err != nil {
 		return fmt.Errorf("router failed to start: %v", err)
 	}

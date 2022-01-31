@@ -10,12 +10,12 @@ import (
 )
 
 func Example() {
-	// Create a new metrics router at port 9999
+	// Create a new metrics router at port 9999 in debug mode
 	h := &prometheus.Handler{}
 	e := stats.NewEngine("gobot_example", h,
 		stats.T("name", "example"),
 		stats.T("custom", "on all metrics, beware cardinality"))
-	statSvr := NewPrometheusMetricServer(9999, h, e)
+	statSvr := NewPrometheusMetricServer(9999, "debug", h, e)
 	svr := httptest.NewServer(statSvr)
 	defer statSvr.Close()
 	defer svr.Close()
