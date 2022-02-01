@@ -10,12 +10,12 @@ import (
 )
 
 func Example() {
-	// Create a new metrics router at port 9999
+	// Create a new metrics router at port 9999 in debug mode
 	h := &prometheus.Handler{}
 	e := stats.NewEngine("gobot_example", h,
 		stats.T("name", "example"),
 		stats.T("custom", "on all metrics, beware cardinality"))
-	statSvr := NewPrometheusMetricServer(9999, h, e)
+	statSvr := NewPrometheusMetricServer(9999, "debug", h, e)
 	svr := httptest.NewServer(statSvr)
 	defer statSvr.Close()
 	defer svr.Close()
@@ -71,12 +71,12 @@ func Example() {
 	// gobot_example_a_guage_only_changes_sometimes{custom="on all metrics, beware cardinality",name="example"} 1 -62142399689877
 	//
 	// # TYPE gobot_example_durations_tracked_this_way histogram
-	// gobot_example_durations_tracked_this_way_count{custom="on all metrics, beware cardinality",name="example"} 2 -62142399689877
-	// gobot_example_durations_tracked_this_way_sum{custom="on all metrics, beware cardinality",name="example"} 101020.158 -62142399689877
+	// gobot_example_durations_tracked_this_way_count{custom="on all metrics, beware cardinality",name="example"} 1 -62142399689877
+	// gobot_example_durations_tracked_this_way_sum{custom="on all metrics, beware cardinality",name="example"} 50510.079 -62142399689877
 	//
 	// # TYPE gobot_example_stats_are_labels counter
-	// gobot_example_stats_are_labels{custom="on all metrics, beware cardinality",name="example"} 22 -62142399689877
+	// gobot_example_stats_are_labels{custom="on all metrics, beware cardinality",name="example"} 11 -62142399689877
 	//
 	// # TYPE gobot_example_stats_can_have_extra_tags_too counter
-	// gobot_example_stats_can_have_extra_tags_too{custom="on all metrics, beware cardinality",name="example",val1="testB"} 2 -62142399689877
+	// gobot_example_stats_can_have_extra_tags_too{custom="on all metrics, beware cardinality",name="example",val1="testB"} 1 -62142399689877
 }

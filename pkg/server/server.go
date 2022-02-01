@@ -13,6 +13,7 @@ const DefaultRouterDebug = false
 
 type Server struct {
 	Port        int `json:"port"`
+	Mode		string `json:"mode"`
 	StatsEngine *stats.Engine
 	Router      *gin.Engine
 	Handler     stats.Handler
@@ -37,19 +38,21 @@ func StatsHandler(h http.Handler) GinHandler {
 	}
 }
 
-func NewDefaultPrometheusMetricServer(port int) *Server {
+func NewDefaultPrometheusMetricServer(port int, mode string) *Server {
 	h := prometheus.DefaultHandler
 	e := stats.DefaultEngine
-	return NewPrometheusMetricServer(port, h, e)
+	return NewPrometheusMetricServer(port, mode, h, e)
 }
 
-func NewPrometheusMetricServer(port int, h stats.Handler, eng *stats.Engine) *Server {
+func NewPrometheusMetricServer(port int, mode string, h stats.Handler, eng *stats.Engine) *Server {
 	eng.Handler = h
 	stats.DefaultEngine = eng
+
 	s := &Server{
 		Port:        port,
+		Mode:		 mode,
 		StatsEngine: eng,
-		Router: NewGinEngine(nil, []GinHandler{
+		Router: NewGinEngine(mode, nil, []GinHandler{
 			StatsHandler(h.(http.Handler)),
 		}),
 		Handler:    h,

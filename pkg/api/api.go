@@ -9,6 +9,7 @@ import (
 )
 
 const DefaultStatsPort = 7418
+const DefaultGinMode = "debug"
 var DefaultStatsHandler = &prometheus.Handler{}
 
 func init() {
@@ -18,6 +19,7 @@ func init() {
 type MetricsConfig struct {
 	Prefix    string `json:"prefix"`
 	StatsPort int    `json:"stats_port"`
+	GinMode   string `jason:"gin_mode"`
 }
 
 type Metrics struct {
@@ -28,23 +30,24 @@ type Metrics struct {
 }
 
 func NewDefaultMetrics() *Metrics {
-	return NewMetrics(DefaultStatsPort, DefaultStatsHandler, NewStatsEngine(""))
+	return NewMetrics(DefaultStatsPort, DefaultGinMode, DefaultStatsHandler, NewStatsEngine(""))
 }
 
-func NewMetrics(port int, h *prometheus.Handler, eng *stats.Engine) *Metrics {
+func NewMetrics(port int, mode string, h *prometheus.Handler, eng *stats.Engine) *Metrics {
 	return &Metrics{
 		Config:       &MetricsConfig{
 			Prefix:    eng.Prefix,
 			StatsPort: port,
+			GinMode:   mode,
 		},
 		StatsHandler: h,
 		MetricsEngine: eng,
-		MetricsSvr:   NewMetricsServer(h, port, eng),
+		MetricsSvr:   NewMetricsServer(h, port, mode, eng),
 	}
 }
 
-func NewMetricsServer(h *prometheus.Handler, port int, eng *stats.Engine) *metrics.Server {
-	return metrics.NewPrometheusMetricServer(port, h, eng)
+func NewMetricsServer(h *prometheus.Handler, port int, mode string, eng *stats.Engine) *metrics.Server {
+	return metrics.NewPrometheusMetricServer(port, mode, h, eng)
 }
 
 func NewStatsEngine(prefix string, tags... stats.Tag) *stats.Engine {
@@ -69,7 +72,7 @@ func (m *Metrics) Run() error {
 	if m.MetricsSvr != nil {
 		svr := m.MetricsSvr
 		*m.MetricsEngine = *m.MetricsSvr.StatsEngine
-		m.MetricsSvr = NewMetricsServer(m.StatsHandler, m.Config.StatsPort, m.MetricsEngine)
+		m.MetricsSvr = NewMetricsServer(m.StatsHandler, m.Config.StatsPort, m.Config.GinMode, m.MetricsEngine)
 		_ = svr.Close()
 	}
 
