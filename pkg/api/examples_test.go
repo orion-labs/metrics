@@ -48,9 +48,7 @@ func exampleHistograms(t, t2 time.Time) {
 }
 
 func Example_Default() {
-
-	// default port is 7418; default mode is "debug"
-
+	// Create a new metrics router at port 9999
 	metrics := NewDefaultMetrics()
 	statSvr := metrics.MetricsSvr
 	svr := httptest.NewServer(statSvr)
@@ -145,12 +143,8 @@ func Example_WithLabels() {
 }
 
 func Example_Customized() {
-
-	// customize port and mode to 9000 and "release"
-	statsPort := 9000
-	ginMode := "release"
-
-	metrics := NewMetrics(statsPort, ginMode, &prometheus.Handler{},
+	// Create a new metrics router at port 9999
+	metrics := NewMetrics(DefaultStatsPort, &prometheus.Handler{},
 		NewStatsEngine("example_with_prefix",
 			stats.T("name", "example"),
 			stats.T("owner", "TJ"),
