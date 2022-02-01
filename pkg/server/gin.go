@@ -5,9 +5,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type GinMode string
+
 const (
-	GIN_MODE_DEBUG = "debug"
-	GIN_MODE_RELEASE = "release"
+	GIN_MODE_DEBUG GinMode = "debug"
+	GIN_MODE_RELEASE GinMode = "release"
 )
 
 type GinHandler struct {
@@ -20,9 +22,9 @@ type GinHandler struct {
 func NewGinEngine(mode string, middleware []GinHandler, handlers []GinHandler) *gin.Engine {
 
 	//by default, the GIN mode is set to debug
-	if mode == GIN_MODE_DEBUG {
+	if GinMode(mode) == GIN_MODE_DEBUG {
 		gin.SetMode(gin.DebugMode)
-	} else if mode == GIN_MODE_RELEASE {
+	} else if GinMode(mode) == GIN_MODE_RELEASE {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
