@@ -57,7 +57,7 @@ func (t *TestInstanceData) Setup(statPrefix string) {
 		Metrics:     map[string]string{},
 		RealHandler: &prometheus.Handler{},
 	}
-	t.StatsServer = NewPrometheusMetricServer(9999, "release", t.Handler, t.Eng)
+	t.StatsServer = NewPrometheusMetricServer(9999, t.Handler, t.Eng)
 
 	// Attach that Handler to our httptest server
 	t.HttpServer = httptest.NewServer(t.StatsServer)
